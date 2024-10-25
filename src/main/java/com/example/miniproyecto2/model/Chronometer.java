@@ -5,31 +5,60 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
 
+/**
+ * This class implements the IChronometer Interface. This class contains the stopwatch methods, which shows how long
+ * it is taking you to solve the sudoku
+ * @author Maycol Andres Taquez Carlosama
+ * @code 2375000
+ * @author Santiago Valencia
+ * @code 23
+ */
 
 public class Chronometer implements IChronometer{
+    /**
+     * Instance of the class Timeline
+     * @serialField
+     */
     private Timeline timeline;
+    /**
+     * Minute counter
+     * @serialField
+     */
     private int minutes;
+    /**
+     * Second counter
+     * @serialField
+     */
     private int seconds;
-
+    /**
+     * Instance of the class GameController
+     * @serialField
+     */
     private GameController controller;
 
-    // El objeto que recibe este constructor ya esta asociado al archivo Fxml, por lo que si se crea una
-    // nueva instancia esta no estaría asociada a los metodos y atributos del FXML. * Esto solo sucede con
-    // clases de tipo controllador*
+    /**
+     * A constructor of the "Chronometer" class that receives as a parameter an object of the "GameController" class
+     * that is associated with the FXML file.
+     * @param controller class object GameController
+     */
+
     public Chronometer(GameController controller) {
 
         this.controller = controller;
 
-        // Inicializa el Timeline con intervalos de 1 segundo (1000 ms)
+        // Instance that Initializes the Timeline with 1 second intervals.
         timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
             updateTime();
             updateLabel();
         }));
 
-        // Configura el Timeline para que se repita indefinidamente
+        // Set the Timeline to repeat indefinitely
         timeline.setCycleCount(Timeline.INDEFINITE);
     }
 
+    /**
+     * Method that updates seconds and minutes
+     */
     @Override
     public void updateTime(){
         seconds ++;
@@ -39,24 +68,32 @@ public class Chronometer implements IChronometer{
         }
     }
 
+    /**
+     * Method that updates the Label with minutes and seconds
+     */
     @Override
     public void updateLabel() {
-        // Aseguramos que los minutos y segundos tengan dos dígitos
+        // Format that ensures that minutes and seconds are in two digits
         String timeString = String.format("%02d:%02d", minutes, seconds);
-
-        controller.getLabelTime().setText(timeString); // Actualiza el Label en la vista
+        controller.getLabelTime().setText(timeString);
     }
 
-    // Metodo para comenzar el cronometro
+    /**
+     * Method that start the Chronometer
+     */
     public void start() {
         timeline.play();
     }
 
-    // Detiene el cronometro
+    /**
+     * Method that stop the Chronometer
+     */
     public void stop() {
         timeline.stop();
     }
-
+    /**
+     * Method that restart the Chronometer
+     */
     public void restart(){
         minutes = 0;
         seconds = 0;
