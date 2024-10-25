@@ -31,7 +31,12 @@ public class Game implements IGame{
         gridPane = gameController.getGridPane();
     }
 
-    // Metodo para obtener el valor correcto de la matriz
+    /**
+     * Gets the correct value from the Sudoku matrix for a given position.
+     * @param row The row of the cell.
+     * @param col The column of the cell.
+     * @return The correct value at the specified position.
+     */
     public int getMatrizValue(int row, int col) {
         return matriz.get(row).get(col);
     }
@@ -117,16 +122,19 @@ public class Game implements IGame{
         }
     }
 
+    /**
+     * Makes editable the cells that should be modifiable by the player.
+     */
     public void makeEditableCellsEditable() {
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 6; col++) {
                 TextField txtField = (TextField) getNodeByRowColumnIndex(row, col, gridPane);
                 if (txtField != null) {
-                    // Verificamos si el campo de texto no contiene un número por defecto
+                    // We check if the text field does not contain a number by default
                     if (txtField.getText().isEmpty() || txtField.getStyleClass().contains("default-cell")) {
-                        txtField.setEditable(true); // Solo hacer editable si está vacío o es por defecto
+                        txtField.setEditable(true); // Only make editable if empty or default
                     } else {
-                        txtField.setEditable(false); // Si ya tiene un número, no debe ser editable
+                        txtField.setEditable(false); // If it already has a number, it should not be editable
                     }
                 }
             }

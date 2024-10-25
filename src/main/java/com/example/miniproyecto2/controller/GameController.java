@@ -24,29 +24,37 @@ public class GameController {
     private Game game;
     private Board board;
 
-    // label que muestra la cantidad de pistas disponibles
+
     @FXML
     private Label hintsLabel;
-    // boton  que el usuario presiona para solicitar ayuda en una pista
+
     @FXML
     private Button hintButton;
+
     @FXML
     private Label scoreLabel;
+
     @FXML
     private Label labelTime;
 
     @FXML
-    private Label errorCountLabel; // Label para mostrar el contador de errores
-    private int errorCount = 0; // Contador de errores
-    private final int MAX_ERRORS = 6; // Máximo de errores permitidos
+    private Label errorCountLabel; // Label to display the error counter
+    /**
+     * Counter for player errors.
+     */
+    private int errorCount = 0; // Error counter
+    /**
+     * Maximum number of errors allowed before the game ends.
+     */
+    private final int MAX_ERRORS = 6; // Maximum allowed errors
     private int score = 0;
     private boolean firstGame = false;
 
     @FXML
     private GridPane gridPane;
-    private TextField selectedTextField; // Variable para guardar el TextField seleccionado
-    private int selectedRow = -1; // Almacena la fila del TextField seleccionado
-    private int selectedColumn = -1; // Almacena la columna del TextField seleccionado
+    private TextField selectedTextField; // Variable to store the selected TextField
+    private int selectedRow = -1; // Stores the row of the selected TextField
+    private int selectedColumn = -1; // Stores the column of the selected TextField
 
     @FXML
     private Button clearButton;
@@ -161,13 +169,16 @@ public class GameController {
         return gridPane;
     }
 
-    /* SISTEMA DE AYUDA/INSTRUCCIONES */
 
+    /**
+     * Handles the "How to Play" button event, showing the game instructions.
+     * @param event The action event that triggers the display of instructions.
+     */
     @FXML
     void onHandleButtonHowToPlay(ActionEvent event) {
-        // Crear una cuadro de diálogo de tipo "INFORMATION" que mostrará un cuadro de diálogo informativo
+        // Create an "INFORMATION" type dialog box that will display an informative dialog
         Alert showMessageHowToPlay = new Alert(Alert.AlertType.INFORMATION);
-        // Establece el título del cuadro de diálogo, el encabezado, el contenido principal del mensaje de la ventana emergente
+        // Set the title of the dialog box, the header, the main content of the popup window message
         showMessageHowToPlay.setTitle("Instrucciones");
         showMessageHowToPlay.setHeaderText("Instrucciones del Juego");
         showMessageHowToPlay.setContentText("Bienvenido,\n" +
@@ -178,15 +189,21 @@ public class GameController {
                 "\n4. Debes asegurarte de no dejar ninguna celda vacía ni repetir números en filas, columnas o bloques.\n" +
                 "\n¡Buena suerte y diviértete jugando!");
 
-        // Mostrar el cuadro de diálogo en pantalla y esperar a que el usuario la cierre antes de continuar
+        // Display the dialog box on screen and wait for the user to close it before continuing
         showMessageHowToPlay.showAndWait();
     }
 
-    /* MANEJO DE PISTAS */
 
+
+    /**
+     * Number of hints available to the player.
+     */
     private int availableHints = 6; // Iniciamos con 6 pistas disponibles
 
-    // Metodo que maneja el evento del clic del boton de pistas
+    /**
+     * Handles the hint button event.
+     * @param event The action event that triggers the hint request.
+     */
     @FXML
     void onHandleButtonHint(ActionEvent event) {
         System.out.println("BOTÓN DE PISTAS PRESIONADO");
@@ -198,14 +215,17 @@ public class GameController {
         }
     }
 
+    /**
+     * Shows a hint to the player, revealing a correct number in a selected empty cell.
+     */
     private void showHint() {
         if (selectedTextField != null && selectedTextField.getText().isEmpty()) {
             availableHints--;
 
-            // Obtener el valor correcto de la matriz
+            // Get the correct value from the matrix
             int hint = game.getMatrizValue(selectedRow, selectedColumn);
 
-            // Mostrar el valor en el TextField seleccionado
+            // Show the value in the selected TextField
             selectedTextField.setText(String.valueOf(hint));
 
             System.out.println("Pista revelada: " + hint);
@@ -218,57 +238,69 @@ public class GameController {
         }
     }
 
-    // Metodo que actualiza la visualización del contador de pistas
+    /**
+     * Updates the display of available hints counter.
+     */
     private void updateHintDisplay() {
         if (availableHints > 0) {
-            // Muestra solo el número de pistas restantes
+            // Show only the number of remaining hints
             hintsLabel.setText(String.valueOf(availableHints));
             hintsLabel.setVisible(true);
         } else {
-            // Cuando no quedan pistas, oculta el label y deshabilita el botón
+            // When no hints are left, hide the label and disable the button
             hintsLabel.setVisible(false);
             hintButton.setDisable(true);
         }
     }
 
-    /* SISTEMA DE CONTADOR DE ERRORES */
 
-    // Metodo para inicializar el contador de errores
+
+    /**
+     * Initializes the error counter in the interface.
+     */
     private void initializeErrorCounter() {
         errorCountLabel.setText("0/" + MAX_ERRORS);
     }
 
-    /* VALIDACIÓN DETALLADA DE MOVIMIENTOS PARA ERRORES */
 
+    /**
+     * Validates if a number can be placed in the given row and column according to Sudoku rules.
+     *
+     * @param row The row index of the cell.
+     * @param column The column index of the cell.
+     * @param number The number to validate in the given cell.
+     * @return true if the move is valid, false otherwise.
+     */
     private void validateMove(int row, int column, int number) {
         boolean hasError = false;
         TextField currentCell = (TextField) game.getNodeByRowColumnIndex(row, column, gridPane);
 
-        // Validar fila
+        // Validate row
         for (int c = 0; c < 6; c++) {
             if (c != column) {
                 TextField cellInRow = (TextField) game.getNodeByRowColumnIndex(row, c, gridPane);
                 if (cellInRow != null && !cellInRow.getText().isEmpty() &&
                         Integer.parseInt(cellInRow.getText()) == number) {
                     hasError = true;
-                    highlightError(cellInRow);  // Resalta la celda con conflicto
+                    highlightError(cellInRow);   // Highlight the conflicting cell
                 }
             }
         }
 
-        // Validar columna
+        // Validate column
+
         for (int r = 0; r < 6; r++) {
             if (r != row) {
                 TextField cellInColumn = (TextField) game.getNodeByRowColumnIndex(r, column, gridPane);
                 if (cellInColumn != null && !cellInColumn.getText().isEmpty() &&
                         Integer.parseInt(cellInColumn.getText()) == number) {
                     hasError = true;
-                    highlightError(cellInColumn);  // Resalta la celda con conflicto
+                    highlightError(cellInColumn);  // Highlight the conflicting cell
                 }
             }
         }
 
-        // Validar bloque 2x3
+        // Validate 2x3 block
         int blockStartRow = (row / 2) * 2;
         int blockStartCol = (column / 3) * 3;
 
@@ -279,20 +311,21 @@ public class GameController {
                     if (cellInBlock != null && !cellInBlock.getText().isEmpty() &&
                             Integer.parseInt(cellInBlock.getText()) == number) {
                         hasError = true;
-                        highlightError(cellInBlock);  // Resalta la celda con conflicto
+                        highlightError(cellInBlock);  // Highlight the conflicting cell
                     }
                 }
             }
         }
 
-        // Si hay error, incrementar contador y aplicar estilos
+        // If there's an error, increment counter and apply styles
         if (hasError) {
             errorCount++;
             if (errorCount <= MAX_ERRORS) {
                 errorCountLabel.setText(errorCount + "/" + MAX_ERRORS);
-                highlightError(currentCell);  // Resalta la celda actual
+                highlightError(currentCell);  // Highlight the current cell
 
-                // Programar la eliminación del resaltado después de 2 segundos
+
+                // Schedule removal of highlighting after 2 seconds
                 Timeline timeline = new Timeline(new KeyFrame(
                         Duration.seconds(2),
                         evt -> clearHighlights()
@@ -330,10 +363,14 @@ public class GameController {
         scoreLabel.setText(String.valueOf(score));
     }
 
-    // Metodo para resaltar una celda con error
+    /**
+     * Highlights a specific cell with an error indication when an incorrect move is made.
+     *
+     * @param cell The TextField cell to be highlighted due to an error.
+     */
     private void highlightError(TextField cell) {
         if (cell != null) {
-            // Combina el fondo suave con un borde rojo
+            // Combines soft background with a red border
             cell.setStyle(
                     "-fx-background-color: rgba(246, 156, 246, 0.8);" +  // Fondo rojo suave
                             "-fx-border-color: #ed5d5d;"                        // Color del borde rojo
@@ -341,7 +378,9 @@ public class GameController {
         }
     }
 
-    // Metodo para limpiar todos los resaltados
+    /**
+     * Removes all error highlights from the board.
+     */
     private void clearHighlights() {
         for (int r = 0; r < 6; r++) {
             for (int c = 0; c < 6; c++) {
@@ -359,51 +398,56 @@ public class GameController {
         game.showSolutionSudoku();
     }
 
-    /* SISTEMA DE GAME OVER  */
 
 
+    /**
+     * Displays an alert when the game is over due to too many errors.
+     */
     private void showGameOverAlert() {
         Alert gameOverAlert = new Alert(Alert.AlertType.ERROR);
         gameOverAlert.setTitle("Game Over");
 
-        // Cargar la imagen de Game Over
+        // Load the Game Over image
         ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/com/example/miniproyecto2/images/gameover-image.png")));
-        // Ajustar el tamaño de la imagen si es necesario
+        // Adjust the image size if necessary
         imageView.setFitHeight(200);
         imageView.setFitWidth(380);
         imageView.setPreserveRatio(true);
 
-        // Crear label para el header con fuente Ravie y centrado
+        // Create label for the header with Ravie font and centered
         Label headerLabel = new Label("¡Has perdido!");
         headerLabel.setFont(Font.font("Ravie", 20));
         headerLabel.setAlignment(Pos.CENTER);
-        headerLabel.setMaxWidth(Double.MAX_VALUE); //Permite que el label ocupe todo el ancho disponible
+        headerLabel.setMaxWidth(Double.MAX_VALUE); // Allows the label to occupy all available width
         headerLabel.setStyle("-fx-text-fill: #FF0000; -fx-font-weight: bold;");
 
         Label contentLabel = new Label("Has alcanzado el máximo de errores permitidos (6). El juego ha terminado.");
-        contentLabel.setFont(Font.font("Impact", 14)); // Cambiar fuente a Impact
-        contentLabel.setWrapText(true); // Permitir que el texto se ajuste
+        contentLabel.setFont(Font.font("Impact", 14));
+        contentLabel.setWrapText(true);
 
-        // Crear un VBox para organizar los elementos verticalmente
-        VBox content = new VBox(10); // 10 es el espaciado entre elementos
+        // Create a VBox to organize elements vertically
+        VBox content = new VBox(10); // 10 is the spacing between elements
         content.setAlignment(Pos.CENTER);
         content.getChildren().addAll(imageView, contentLabel);
 
-        // Establecer el contenido personalizado
+        // Set custom content
         gameOverAlert.getDialogPane().setHeader(headerLabel);
         gameOverAlert.getDialogPane().setContent(content);
 
-        // Personalizar el estilo del DialogPane (opcional)
+        // Customize DialogPane style
         gameOverAlert.getDialogPane().setStyle("-fx-background-color: white;");
 
-        // Mostrar la ventana emergente
+        // Show the popup window
         gameOverAlert.showAndWait();
 
-        // Opcional: Aquí se puede  agregar código para reiniciar el juego
     }
 
+    /**
+     * Handles the event to clear the Sudoku board.
+     * @param event The action event that triggers the clearing.
+     */
     @FXML
     public void onHandleclearSudokuBoard(ActionEvent event) {
-        clearAdapter.clearSudokuBoard(); // Llama al metodo del adaptador para limpiar el tablero
+        clearAdapter.clearSudokuBoard(); // Call the adapter method to clear the board
     }
 }
