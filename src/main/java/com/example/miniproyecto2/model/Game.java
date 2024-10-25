@@ -10,21 +10,59 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * This class implements the IGame Interface. TThis class contains the logic of the game
+ * @author Maycol Andres Taquez Carlosama
+ * @code 2375000
+ * @author Santiago Valencia Aguiño
+ * @code 2343334
+ */
 public class Game implements IGame{
+    /**
+     * Class Instance List
+     * @serialField
+     */
     private List<List<Integer>>  matriz;
+    /**
+     * Class Instance Random
+     * @serialField
+     */
     private Random random = new Random();
+    /**
+     * Layout Instance GridPane
+     * @serialField
+     */
     private GridPane gridPane;
+    /**
+     * Class Instance GameController
+     * @serialField
+     */
     private GameController gameController;
-    private Background background;
+    /**
+     * A helper variable that executes a block of code based on its value
+     * @serialField
+     */
     private int lastSelectedRow = -1;
+    /**
+     * A helper variable that executes a block of code based on its value
+     * @serialField
+     */
     private int lastSelectedColumn = -1;
-
-    // Variable para comprobar en el metodo editableBoxesTrue() si se ha editado una casilla antes.
+    /**
+     * A helper variable that executes a block of code based on its value
+     * @serialField
+     */
     private int lastEditableBoxes = -1;
-
-    // Matriz que almacenaran las posiciónes de las ultimas casillas por defecto, para que sean editables
+    /**
+     * Stores the positions of the last few boxes by default
+     * @serialField
+     */
     private int boxesMatriz[][];
 
+    /**
+     * Game Class Builder
+     * @param gameController Class Instance GameController
+     */
     public Game(GameController gameController) {
         this.gameController = new GameController();
         matriz = Board.getMatriz();
@@ -37,15 +75,15 @@ public class Game implements IGame{
     }
 
 
-
-     //Metodo que puede revelar toda la matriz, puede servir cuando el usuario haya perdido y se muestre la
-     //solución
+    /**
+     *  Reveal the complete sudoku solution
+     * @see #getNodeByRowColumnIndex(int, int, GridPane)
+     */
     public void showSolutionSudoku(){
         int digit;
         matriz = Board.getMatriz();
         for (int row = 0; row < 6; row++) {
             for (int column = 0; column < 6; column++) {
-                // Se obtiene el textfield del GridPane. Correspondiente a la fila y columna actual
                 TextField txtField = (TextField) getNodeByRowColumnIndex(row, column, gridPane);
                 digit = matriz.get(row).get(column);
                 txtField.setText(digit + "");
@@ -53,11 +91,14 @@ public class Game implements IGame{
         }
     }
 
+    /**
+     * Clean up the sudoku matrix with empty spaces
+     * @see #getNodeByRowColumnIndex(int, int, GridPane)
+     */
     public void cleanMatriz(){
         matriz = Board.getMatriz();
         for (int row = 0; row < 6; row++) {
             for (int column = 0; column < 6; column++) {
-                // Se obtiene el textfield del GridPane. Correspondiente a la fila y columna actual
                 TextField txtField = (TextField) getNodeByRowColumnIndex(row, column, gridPane);
                 txtField.setText("");
             }
@@ -65,25 +106,29 @@ public class Game implements IGame{
         System.out.println("Metodo limpiar matriz activado");
     }
 
-    // Llena cada bloque de la matriz con 2 numeros de forma aletatoria.
+    /**
+     * Fill each block of the matrix with 2 numbers in a finning shape.
+     * @see #editableBoxesTrue()
+     * @see #getNodeByRowColumnIndex(int, int, GridPane)
+     */
     public void fillblocks(){
         int count=0;
         editableBoxesTrue();
         matriz = Board.getMatriz();
         boxesMatriz = new int[12][2];
-        // Iterar sobre los bloques de 2x3 en la matriz
+        // Iterate over the 2x3 blocks in the array
         for (int bloqueFila = 0; bloqueFila < 6; bloqueFila += 2) {
             for (int bloqueColumna = 0; bloqueColumna < 6; bloqueColumna += 3) {
                 List<int[]> posicionesBloque = new ArrayList<>();
 
-                // Agregar todas las posiciones del bloque actual
+                // Add all items in the current block
                 for (int i = 0; i < 2; i++) {
                     for (int j = 0; j < 3; j++) {
                         posicionesBloque.add(new int[]{bloqueFila + i, bloqueColumna + j});
                     }
                 }
 
-                // Seleccionar dos posiciones distintas del bloque
+                // Select two different block positions
                 int[] posicion1 = posicionesBloque.remove(random.nextInt(posicionesBloque.size()));
                 int[] posicion2 = posicionesBloque.remove(random.nextInt(posicionesBloque.size()));
 
@@ -99,12 +144,10 @@ public class Game implements IGame{
                 int num2 = matriz.get(pos21).get(pos22);
                 txtField2.setText(num2 + "");
 
-                // Metodo que deshabilita la posibilidad de hacer modificaciones sobre las celdas por defecto
-                // de cada bloque
+                // Disable editing of the default cells of each block
                 editableBoxesFalse(pos11, pos12, pos21, pos22);
 
-                // Ahora el metodo que habilita la posibilidad de modificar las celdas por defecto se puede usar
-                // por que ya es ejecuto su metodo que hace el procedimiento contrario.
+                // The value of the variable that gives the green light to run other lines of code.
                 lastEditableBoxes = 0;
 
                 boxesMatriz[count][0] = pos11;
@@ -133,41 +176,60 @@ public class Game implements IGame{
         }
     }
 
-    // Metodo coloca un color de fondo a los labels, del bloque y de filas y columnas en donde se presiono.
+    /**
+     * Defines a background color to the labels, block, rows and columns where it was pressed.
+     * @param row row
+     * @param column column
+     * @see #removePaintLastBox()
+     * @see #removePaintBlock()
+     * @see #removePaintMatriz()
+     * @see #paintRows(int)
+     * @see #paintColumns(int)
+     * @see #paintBlock(int, int)
+     * @see #paintCurrentBox(int, int)
+     */
     public void paintSquares(int row, int column){
-        // Primero, limpia la celda previamente seleccionada
         removePaintLastBox();
-        // Limpia el bloque de la celda previamente seleccionada
         removePaintBlock();
-        // Limpia toda la matriz quitando los fondos
         removePaintMatriz();
 
-        // Pinta filas
         paintRows(row);
-        // Pinta columnas
         paintColumns(column);
-        // Pinta bloque
         paintBlock(row, column);
-        // Pinta casilla actual
         paintCurrentBox(row, column);
 
-        // Actualiza la celda seleccionada: Para limpiar el fondo de la ultima celda seleccionada
+        // Refreshes the selected cell to clean up the background of the last selected cell
         lastSelectedRow = row;
         lastSelectedColumn = column;
     }
 
+    /**
+     * Set a fund to the current box
+     * @param row row
+     * @param column column
+     * @see #getNodeByRowColumnIndex(int, int, GridPane)
+     */
     public void paintCurrentBox(int row, int column){
         TextField txtField = (TextField) getNodeByRowColumnIndex(row,column, gridPane);
         txtField.getStyleClass().add("currentBoxBackground");
     }
 
+    /**
+     * Set a background color to the rows
+     * @param row row
+     * @see #getNodeByRowColumnIndex(int, int, GridPane)
+     */
     public void paintRows(int row){
         for(int i= 0; i<6; i++){
             TextField txtField = (TextField) getNodeByRowColumnIndex(row, i, gridPane);
             txtField.getStyleClass().add("squaresBackground");
         }
     }
-
+    /**
+     * Set a background color to the columns
+     * @param column row
+     * @see #getNodeByRowColumnIndex(int, int, GridPane)
+     */
     public void paintColumns(int column){
         for(int i= 0; i<6; i++){
             TextField txtField = (TextField) getNodeByRowColumnIndex(i, column, gridPane);
@@ -175,27 +237,33 @@ public class Game implements IGame{
         }
     }
 
+    /**
+     * Set a fund to the current Block
+     * @param row row
+     * @param column column
+     * @see #getRowBlock(int)
+     * @see #getColumnBlock(int)
+     * @see #getNodeByRowColumnIndex(int, int, GridPane)
+     */
     public void paintBlock(int row, int column){
-        // Obtiene el primer numero de la fila del bloque
         int f = getRowBlock(row);
-        // Obtiene el primer numero de la columna de bloque
         int c = getColumnBlock(column);
-
-        // Bucle que recorre los bloques 2x3 por filas y luego por columnas
+        // Loop that runs through 2x3 blocks by rows and then by columns
         for(int i=0; i<2; i++){
             for(int j=0; j<3; j++){
                 TextField txtField = (TextField) getNodeByRowColumnIndex(f, c, gridPane);
                 txtField.getStyleClass().add("squaresBackground");
-                // Se recorre la columna
                 c++;
             }
-            // Se reinicia al valor de la columna del bloque actual
             c = getColumnBlock(column);
-            // Se continua con la siguiente fila.
             f++;
         }
     }
 
+    /**
+     * Remove the background from each sudoku square
+     * @see #getNodeByRowColumnIndex(int, int, GridPane)
+     */
     public void removePaintMatriz(){
         for(int i=0; i<6; i++){
             for(int j=0; j<6; j++){
@@ -205,8 +273,11 @@ public class Game implements IGame{
         }
     }
 
+    /**
+     * Remove the background color from the last box
+     * @see #getNodeByRowColumnIndex(int, int, GridPane)
+     */
     public void removePaintLastBox(){
-        // Primero, limpia la celda previamente seleccionada
         if (lastSelectedRow != -1 && lastSelectedColumn != -1) {
             TextField txtField = (TextField) getNodeByRowColumnIndex(lastSelectedRow, lastSelectedColumn, gridPane);
             txtField.getStyleClass().remove("squaresBackground");
@@ -214,14 +285,23 @@ public class Game implements IGame{
         }
     }
 
+    /**
+     * Remove the background color from the block
+     * @see #removePaintRows(int)
+     * @see #removePaintColumns(int)
+     */
     public void removePaintBlock(){
-        // Primero, limpia la celda previamente seleccionada
         if (lastSelectedRow != -1 && lastSelectedColumn != -1) {
             removePaintRows(lastSelectedRow);
             removePaintColumns(lastSelectedColumn);
         }
     }
 
+    /**
+     * Remove the background color from the rows
+     * @param row row
+     * @see #getNodeByRowColumnIndex(int, int, GridPane)
+     */
     public void removePaintRows(int row){
         for(int i= 0; i<6; i++){
             TextField txtField = (TextField) getNodeByRowColumnIndex(row, i, gridPane);
@@ -229,6 +309,11 @@ public class Game implements IGame{
         }
     }
 
+    /**
+     * Remove the background color from the columns
+     * @param column column
+     * @see #getNodeByRowColumnIndex(int, int, GridPane)
+     */
     public void removePaintColumns(int column){
         for(int i= 0; i<6; i++){
             TextField txtField = (TextField) getNodeByRowColumnIndex(i, column, gridPane);
@@ -236,20 +321,35 @@ public class Game implements IGame{
         }
     }
 
-    // Retorna la fila del bloque, este numero varía segun cada bloque.
+    /**
+     * Return the row index of the block, this number varies according to each block.
+     * @param row row
+     * @return The index of the row
+     */
     public int getRowBlock(int row){
         if(row < 2) return 0;
         else if(row < 4) return 2;
         else return 4;
     }
 
-    // Retorna la primera columna del bloque, este número varia según cada bloque
+    /**
+     * Return the column index of the block, this number varies according to each block.
+     * @param column column
+     * @return The index of the column
+     */
     public int getColumnBlock(int column){
         if(column < 3) return 0;
         else return 3;
     }
 
-    // Metedo que deshabilita la edición sobre las casillas por defecto
+    /**
+     * Method that disables editing over the default boxes
+     * @param row1 row
+     * @param column1 column
+     * @param row2 row
+     * @param column2 column
+     * @see #getNodeByRowColumnIndex(int, int, GridPane) 
+     */
     public void editableBoxesFalse(int row1, int column1, int row2, int column2){
         TextField txtField = (TextField) getNodeByRowColumnIndex(row1, column1, gridPane);
         txtField.setEditable(false);
@@ -257,8 +357,11 @@ public class Game implements IGame{
         txtField2.setEditable(false);
     }
 
-    // Metodo que habilita la edición sobre las ultimas casillas por defecto, se va a usar cuando el usuario
-    // presione el boton de nuevo juego.
+    /**
+     * Method that enables editing on the last boxes by default, will be used when the user presses the
+     * new game button.
+     * @see #getNodeByRowColumnIndex(int, int, GridPane)
+     */
     public void editableBoxesTrue(){
         int count =0;
         int f =0;
@@ -276,6 +379,13 @@ public class Game implements IGame{
         }
     }
 
+    /**
+     * Obtains the TextFields that are inside the GridPane
+     * @param row row
+     * @param column column
+     * @param gridPane instance of GridPane
+     * @return An instance of the gridPane node
+     */
     public Node getNodeByRowColumnIndex(final int row, final int column, GridPane gridPane) {
         for (Node node : gridPane.getChildren()) {
             if (GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null &&
