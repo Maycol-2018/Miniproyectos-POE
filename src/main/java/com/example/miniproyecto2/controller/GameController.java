@@ -321,7 +321,7 @@ public class GameController {
     // reiniciar contador de errores
     private void resetErrorCounter(){
         errorCount = 0;
-        errorCountLabel.setText(String.valueOf(errorCount));
+        errorCountLabel.setText(errorCount + "/" + MAX_ERRORS);
     }
 
     // Reiniciar contador de puntuatción
