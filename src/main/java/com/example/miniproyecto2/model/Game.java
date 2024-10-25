@@ -69,7 +69,15 @@ public class Game implements IGame{
         gridPane = gameController.getGridPane();
     }
 
-    // Metodo para obtener el valor correcto de la matriz
+    /**
+     * Gets the value from the Sudoku matrix at the specified position.
+     *
+     * @param row The row index.
+     * @param col The column index.
+     * @return The value at the specified position.
+     * @throws IndexOutOfBoundsException if the indices are out of bounds.
+     *
+     */
     public int getMatrizValue(int row, int col) {
         return matriz.get(row).get(col);
     }
@@ -160,16 +168,24 @@ public class Game implements IGame{
         }
     }
 
+    /**
+     * Makes the last default cells editable.
+     * This method is used when the user starts a new game, allowing previously
+     * fixed cells to become editable.
+     *
+     * @see #lastEditableBoxes
+     * @see #boxesMatriz
+     */
     public void makeEditableCellsEditable() {
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 6; col++) {
                 TextField txtField = (TextField) getNodeByRowColumnIndex(row, col, gridPane);
                 if (txtField != null) {
-                    // Verificamos si el campo de texto no contiene un número por defecto
+                    // We check if the text field does not contain a number by default
                     if (txtField.getText().isEmpty() || txtField.getStyleClass().contains("default-cell")) {
-                        txtField.setEditable(true); // Solo hacer editable si está vacío o es por defecto
+                        txtField.setEditable(true); // Only make editable if empty or default
                     } else {
-                        txtField.setEditable(false); // Si ya tiene un número, no debe ser editable
+                        txtField.setEditable(false); // If it already has a number, it should not be editable
                     }
                 }
             }
