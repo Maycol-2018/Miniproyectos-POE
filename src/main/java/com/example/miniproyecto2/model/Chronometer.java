@@ -10,8 +10,8 @@ import javafx.util.Duration;
  * it is taking you to solve the sudoku
  * @author Maycol Andres Taquez Carlosama
  * @code 2375000
- * @author Santiago Valencia
- * @code 23
+ * @author Santiago Valencia Aguiño
+ * @code 2343334
  */
 
 public class Chronometer implements IChronometer{
