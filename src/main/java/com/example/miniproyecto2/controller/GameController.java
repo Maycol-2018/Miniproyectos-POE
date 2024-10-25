@@ -18,99 +18,173 @@ import javafx.scene.text.Font;
 import javafx.util.Duration;
 
 
-
+/**
+ * This class handles the events performed by the user
+ * @author Maycol Andres Taquez Carlosama
+ * @code 2375000
+ * @author Santiago Valencia Aguiño
+ * @code 2343334
+ */
 public class GameController {
+    /**
+     * Class Instance Chronometer
+     * @serialField
+     */
     private Chronometer chronometer;
+    /**
+     * Class Instance Game
+     * @serialField
+     */
     private Game game;
+    /**
+     * Class Instance Board
+     * @serialField
+     */
     private Board board;
-
-
+    /**
+     * Label Instance
+     * @serialField
+     */
     @FXML
     private Label hintsLabel;
-
+    /**
+     * Button Instance
+     * @serialField
+     */
     @FXML
     private Button hintButton;
-
+    /**
+     * Label Instance
+     * @serialField
+     */
     @FXML
     private Label scoreLabel;
-
+    /**
+     * Label Instance
+     * @serialField
+     */
     @FXML
     private Label labelTime;
-
+    /**
+     * Label Instance
+     * @serialField
+     */
     @FXML
     private Label errorCountLabel; // Label to display the error counter
     /**
      * Counter for player errors.
+     * @serialField
      */
     private int errorCount = 0; // Error counter
     /**
      * The maximum number of errors allowed before the game ends.
-     * @see #validateMove(int, int, int)
+     * @serialField
      */
     private final int MAX_ERRORS = 6; // Maximum allowed errors
+    /**
+     * Score Counter
+     * @serialField
+     */
     private int score = 0;
+    /**
+     * Auxiliary Boolean Variable
+     * @serialField
+     */
     private boolean firstGame = false;
-
+    /**
+     * Layout Instance GridPane
+     * @serialField
+     */
     @FXML
     private GridPane gridPane;
-    private TextField selectedTextField; // Variable to store the selected TextField
-    private int selectedRow = -1; // Stores the row of the selected TextField
-    private int selectedColumn = -1; // Stores the column of the selected TextField
-
+    /**
+     * TextField Instance
+     * @serialField
+     */
+    private TextField selectedTextField;
+    /**
+     * Its value will cause other lines of code to be executed
+     * @serialField
+     */
+    private int selectedRow = -1;
+    /**
+     * Its value will cause other lines of code to be executed
+     * @serialField
+     */
+    private int selectedColumn = -1;
+    /**
+     * Button Instance
+     * @serialField
+     */
     @FXML
     private Button clearButton;
-
+    /**
+     * Class Instance SudokuClearAdapter
+     * @serialField
+     */
     private SudokuClearAdapter clearAdapter;
-
+    /**
+     * GameController Class Builder
+     */
     public GameController() {}
 
+    /**
+     * Defines attribute values and executes methods
+     * @see #startGame()
+     * @see #initializeErrorCounter()
+     */
     @FXML
     public void initialize(){
-        // Pasamos "this" como referencia de GameController
         this.game = new Game(this);
         board = new Board();
         chronometer = new Chronometer(this);
-        // Se proporciona al cronometro una referencia directa al objeto actual de la clase (GameController)
-        // Así la clase cronometro puede acceder a los elementos de GameController.
-        startGame();
 
-        // Inicializar el contador de errores
+        startGame();
         initializeErrorCounter();
 
         clearAdapter = new SudokuClearAdapter(game, gridPane);
 
         System.out.println("Game controller inicializado");
-        hintsLabel.setVisible(false); // El label está oculto inicialmente
-        hintButton.setDisable(false); // El botón está habilitado desde el inicio
+        hintsLabel.setVisible(false);
+        hintButton.setDisable(false);
     }
 
+    /**
+     * Launch the main methods of the game
+     * @see #generateEvents()
+     * @see #resetScore()
+     */
     public void startGame(){
         chronometer.start();
         board.fillMatriz();
         generateEvents();
         resetScore();
-        //fillTxtLabel();
         game.fillblocks();
     }
 
+    /**
+     * Getter method
+     * @return instance of Label
+     */
     @FXML
      public Label getLabelTime() {
         return labelTime;
     }
 
-
+    /**
+     * Respond to user-made events
+     */
     public void generateEvents(){
-        // Recorrer todas las filas y columnas del GridPane 6x6
         for (int row = 0; row < 6; row++) {
             for (int column = 0; column < 6; column++) {
                 TextField txtField = (TextField) game.getNodeByRowColumnIndex(row, column, gridPane);
 
-                // Verificar que la celda contenga un Label
+                // Verify that the cell contains a Label
                 if (txtField != null) {
                     // Asignar un evento de clic a cada Label
                     int finalRow = row;
                     int finalColumn = column;
-                    // Agregar el evento de selección al TextField existente
+                    // Add the selection event to the existing TextField
                     txtField.setOnMouseClicked(event -> {
                         game.paintSquares(finalRow, finalColumn);
                         System.out.println("Label at [" + finalRow + "," + finalColumn + "] clicked: " + txtField.getText());
@@ -120,7 +194,7 @@ public class GameController {
                         System.out.println("TextField seleccionado en [" + finalRow + "," + finalColumn + "]");
                     });
 
-                    // Modificado el TextFormatter para validar solo cuando se ingresa un número 1 a 6
+                    // Modified the TextFormatter to validate only when a number 1 to 6 is entered
                     txtField.textProperty().addListener((observable, oldValue, newValue) -> {
                         if (!newValue.isEmpty()) {
                             try {
@@ -148,23 +222,26 @@ public class GameController {
         }
     }
 
-    // Metodo que se ejecuta cuando se presione el boton de nuevo juego
+    /**
+     * Runs when the new game button is pressed
+     * @param event ActionEvent
+     */
     @FXML
     public void newGame(ActionEvent event) {
-        clearAdapter.clearSudokuBoard(); // Limpiar el tablero antes de iniciar un nuevo juego
+        clearAdapter.clearSudokuBoard();
         game.cleanMatriz();
         game.fillblocks();
-        game.makeEditableCellsEditable(); // Hacer editables solo las celdas que no son por defecto
+        game.makeEditableCellsEditable();
         chronometer.restart();
         resetErrorCounter();
         resetScore();
-
-        // Metodo que reinicie el contador
-        // Metodo que reinicie los errores
-        // Metodo que reinicie la puntuación
         System.out.println("PRESIONADO");
     }
 
+    /**
+     * Getter method
+     * @return instance of GridPane
+     */
     public GridPane getGridPane(){
         return gridPane;
     }
@@ -373,13 +450,17 @@ public class GameController {
         }
     }
 
-    // reiniciar contador de errores
+    /**
+     * Reset Error Counter
+     */
     private void resetErrorCounter(){
         errorCount = 0;
         errorCountLabel.setText(errorCount + "/" + MAX_ERRORS);
     }
 
-    // Reiniciar contador de puntuatción
+    /**
+     * Reset Error Counter
+     */
     private void resetScore(){
         score =0;
         scoreLabel.setText(String.valueOf(score));
@@ -419,7 +500,10 @@ public class GameController {
         }
     }
 
-    // Metodo que revela la solución del sudoku
+    /**
+     * Method that reveals the solution of sudoku
+     * @param event ActionEvent
+     */
     @FXML
     private void showSolution(ActionEvent event) {
         game.showSolutionSudoku();
