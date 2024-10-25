@@ -14,8 +14,8 @@ import java.util.Objects;
  *
  * @author Maycol Andres Taquez Carlosama
  * @code 2375000
- * @author Santiago Valencia
- * @code 23
+ * @author Santiago Valencia Aguiño
+ * @code 2343334
  */
 
 public class GameStage extends Stage {
