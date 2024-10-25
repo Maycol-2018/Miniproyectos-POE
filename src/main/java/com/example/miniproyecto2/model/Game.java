@@ -32,10 +32,13 @@ public class Game implements IGame{
     }
 
     /**
-     * Gets the correct value from the Sudoku matrix for a given position.
-     * @param row The row of the cell.
-     * @param col The column of the cell.
-     * @return The correct value at the specified position.
+     * Gets the value from the Sudoku matrix at the specified position.
+     *
+     * @param row The row index.
+     * @param col The column index.
+     * @return The value at the specified position.
+     * @throws IndexOutOfBoundsException if the indices are out of bounds.
+     *
      */
     public int getMatrizValue(int row, int col) {
         return matriz.get(row).get(col);
@@ -123,7 +126,12 @@ public class Game implements IGame{
     }
 
     /**
-     * Makes editable the cells that should be modifiable by the player.
+     * Makes the last default cells editable.
+     * This method is used when the user starts a new game, allowing previously
+     * fixed cells to become editable.
+     *
+     * @see #lastEditableBoxes
+     * @see #boxesMatriz
      */
     public void makeEditableCellsEditable() {
         for (int row = 0; row < 6; row++) {

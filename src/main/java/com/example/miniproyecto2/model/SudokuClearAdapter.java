@@ -4,8 +4,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
 /**
- * Adapter class that clears all non-fixed cells on the Sudoku board.
- * This class provides a utility to reset editable cells to their original state.
+ * Adapter class for clearing the Sudoku board.
+ * This class provides a way to clear the Sudoku board without directly coupling
+ * the clear functionality to the main game logic.
+ *
+ * @author Maycol Andres Taquez Carlosama
+ * @code 2375000
+ * @author Santiago Valencia Aguiño
+ * @code 2343334
  */
 public class SudokuClearAdapter {
     private Game game;

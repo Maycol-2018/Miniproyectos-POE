@@ -44,7 +44,8 @@ public class GameController {
      */
     private int errorCount = 0; // Error counter
     /**
-     * Maximum number of errors allowed before the game ends.
+     * The maximum number of errors allowed before the game ends.
+     * @see #validateMove(int, int, int)
      */
     private final int MAX_ERRORS = 6; // Maximum allowed errors
     private int score = 0;
@@ -97,7 +98,6 @@ public class GameController {
         return labelTime;
     }
 
-    /* MANEJO DE EVENTOS Y VALIDACIONES */
 
     public void generateEvents(){
         // Recorrer todas las filas y columnas del GridPane 6x6
@@ -171,8 +171,10 @@ public class GameController {
 
 
     /**
-     * Handles the "How to Play" button event, showing the game instructions.
-     * @param event The action event that triggers the display of instructions.
+     * Handles the event when the user presses the how-to-play button.
+     * This method displays an information dialog with game instructions.
+     *
+     * @param event The action event that triggers the how-to-play instructions.
      */
     @FXML
     void onHandleButtonHowToPlay(ActionEvent event) {
@@ -201,8 +203,12 @@ public class GameController {
     private int availableHints = 6; // Iniciamos con 6 pistas disponibles
 
     /**
-     * Handles the hint button event.
+     * Handles the event when the user presses the hint button.
+     * This method checks if hints are available and shows a hint if possible.
+     *
      * @param event The action event that triggers the hint request.
+     * @see #showHint()
+     * @see #availableHints
      */
     @FXML
     void onHandleButtonHint(ActionEvent event) {
@@ -216,7 +222,11 @@ public class GameController {
     }
 
     /**
-     * Shows a hint to the player, revealing a correct number in a selected empty cell.
+     * Displays a hint for the user.
+     * This method reveals the correct number for the selected cell if it's empty.
+     *
+     * @see #availableHints
+     * @see Game#getMatrizValue(int, int)
      */
     private void showHint() {
         if (selectedTextField != null && selectedTextField.getText().isEmpty()) {
@@ -240,6 +250,11 @@ public class GameController {
 
     /**
      * Updates the display of available hints counter.
+     * This method is called whenever the number of available hints changes.
+     *
+     * @see #availableHints
+     * @see #hintsLabel
+     * @see #hintButton
      */
     private void updateHintDisplay() {
         if (availableHints > 0) {
@@ -257,6 +272,10 @@ public class GameController {
 
     /**
      * Initializes the error counter in the interface.
+     * This method sets up the initial state of the error counter display.
+     *
+     * @see #errorCountLabel
+     * @see #MAX_ERRORS
      */
     private void initializeErrorCounter() {
         errorCountLabel.setText("0/" + MAX_ERRORS);
@@ -264,12 +283,15 @@ public class GameController {
 
 
     /**
-     * Validates if a number can be placed in the given row and column according to Sudoku rules.
+     * Validates a move in the Sudoku and updates the error counter if necessary.
+     * This method checks if the entered number violates Sudoku rules and updates the game state accordingly.
      *
-     * @param row The row index of the cell.
-     * @param column The column index of the cell.
-     * @param number The number to validate in the given cell.
-     * @return true if the move is valid, false otherwise.
+     * @param row The row of the move.
+     * @param column The column of the move.
+     * @param number The entered number.
+     * @see #errorCount
+     * @see #MAX_ERRORS
+     * @see #score
      */
     private void validateMove(int row, int column, int number) {
         boolean hasError = false;
@@ -364,9 +386,11 @@ public class GameController {
     }
 
     /**
-     * Highlights a specific cell with an error indication when an incorrect move is made.
+     * Highlights a cell to indicate an error.
+     * This method applies a visual style to the cell to show it contains an error.
      *
-     * @param cell The TextField cell to be highlighted due to an error.
+     * @param cell The TextField cell to highlight.
+     * @see #clearHighlights()
      */
     private void highlightError(TextField cell) {
         if (cell != null) {
@@ -380,6 +404,9 @@ public class GameController {
 
     /**
      * Removes all error highlights from the board.
+     * This method is called after a certain time period to clear temporary error highlights.
+     *
+     * @see #highlightError(TextField)
      */
     private void clearHighlights() {
         for (int r = 0; r < 6; r++) {
@@ -402,6 +429,10 @@ public class GameController {
 
     /**
      * Displays an alert when the game is over due to too many errors.
+     * This method creates and shows a custom alert with a game over image and message.
+     *
+     * @see #MAX_ERRORS
+     * @see #errorCount
      */
     private void showGameOverAlert() {
         Alert gameOverAlert = new Alert(Alert.AlertType.ERROR);
@@ -444,7 +475,10 @@ public class GameController {
 
     /**
      * Handles the event to clear the Sudoku board.
+     * This method is called when the user requests to clear the board.
+     *
      * @param event The action event that triggers the clearing.
+     * @see Game#cleanMatriz()
      */
     @FXML
     public void onHandleclearSudokuBoard(ActionEvent event) {
